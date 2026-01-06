@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Municipal corporation Dummy Voting Machine</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+}
+
+header {
+    background: linear-gradient(to right, orange, lightgreen);
+    padding: 15px;
+    text-align: center;
+    position: relative;
+}
+
+header h2 {
+    margin: 0;
+    font-weight: 600;
+}
+
+select {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    padding: 5px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 15px;
+}
+
+.blue-pill {
+    background: #0b4db8;
+    color: white;
+    padding: 10px;
+    border-radius: 25px;
+    text-align: center;
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+.yellow-box {
+    background: #ffd800;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.red-title {
+    color: red;
+    text-align: center;
+    font-weight: 600;
+    margin: 10px 0;
+}
+
+.division {
+    text-align: center;
+    font-weight: 600;
+    margin: 10px 0;
+}
+
+.table-wrapper {
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border-bottom: 1px solid #aaa;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+
+th {
+    background: #f1f1f1;
+}
+
+.vote-btn {
+    background: #083fa1;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 14px;
+    cursor: pointer;
+}
+
+.vote-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.arrow {
+    color: darkred;
+    font-size: 18px;
+    margin-right: 6px;
+}
+
+.footer {
+    text-align: center;
+    font-size: 12px;
+    margin: 15px;
+}
+
+/* Overlay + Popup */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.popup {
+    background: white;
+    padding: 25px 40px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.candidate-photo{
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+
+.symbol-img{
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2 id="headerTitle">Municipal corporation Dummy Voting Machine</h2>
+    <select id="language" onchange="changeLang()">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+        <option value="mr">Marathi</option>
+    </select>
+</header>
+
+<div class="container">
+
+<div class="blue-pill" id="instruction"></div>
+
+<div class="red-title" id="bodyTitle"></div>
+
+<div class="yellow-box" id="candidateInfo"></div>
+
+<div class="yellow-box" id="pollingInfo"></div>
+
+<div class="division" id="divisionText"></div>
+
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th id="th1"></th>
+<th id="th2"></th>
+<th id="th3"></th>
+<th id="th4"></th>
+<th id="th5"></th>
+</tr>
+</thead>
+<tbody id="evmTable"></tbody>
+</table>
+</div>
+
+</div>
+
+<div class="footer"></div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay">
+    <div class="popup">Thank you. Your vote has been submitted.</div>
+</div>
+
+<script>
+const lotusImg = `<img class="symbol-img" src="lotus.png" alt="Symbol">`;
+
+const candidates = [
+    "डा. वैभव अंकुश महाले",
+    "प्रतिभा बाळासाहेब पवार",
+    "सिमा मकरंद वाघ",
+    "शरद ( भाऊ) हरिभाऊ फडोल"
+];
+
+
+const candidatePhotos = {
+    // Put your candidate photo files next to this HTML OR update paths below.
+    // Example: "photos/vaibhav.jpg" (create a 'photos' folder and add images there)
+    "डा. वैभव अंकुश महाले": "candidate_1.jpg",
+    "प्रतिभा बाळासाहेब पवार": "candidate_2.jpg",
+    "सिमा मकरंद वाघ": "candidate_3.jpg",
+    "शरद ( भाऊ) हरिभाऊ फडोल": "candidate_4.jpg"
+};
+
+function getCandidatePhotoHTML(name){
+    if (!name || name === "NOTA") return "";
+    const src = candidatePhotos[name] || "candidate_default.jpg";
+    return `<img class="candidate-photo" src="${src}" alt="${name}">`;
+}
+
+
+let step = 0;
+
+function renderTable() {
+    const tbody = document.getElementById("evmTable");
+    tbody.innerHTML = "";
+
+    for (let i = 1; i <= 16; i++) {
+        let name = "";
+        let enabled = false;
+
+        if (i === 16) {
+            name = "NOTA";
+            enabled = true;
+        }
+
+        if (step === 0 && i === 3) {
+            name = candidates[0];
+            enabled = true;
+        }
+        if (step > 0 && i === 2 && step < candidates.length + 1) {
+            name = candidates[step];
+            enabled = true;
+        }
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${i}</td>
+            <td>${name}</td>
+            <td>${getCandidatePhotoHTML(name)}</td>
+            <td>${name && name !== "NOTA" ? lotusImg : ""}</td>
+            <td>
+                <span class="arrow">←</span>
+                <button class="vote-btn" ${enabled ? "" : "disabled"} onclick="vote()">
+                    Press Button
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    }
+}
+
+function vote() {
+    step++;
+    if (step > candidates.length) {
+        document.getElementById("overlay").style.display = "flex";
+        document.querySelectorAll(".vote-btn").forEach(b => b.disabled = true);
+        return;
+    }
+    renderTable();
+}
+
+const langData = {
+    en: {
+        header: "Municipal corporation Dummy Voting Machine",
+        instruction: "For demo voting press the blue button in front candidate name and symbol",
+        bodyTitle: "Municipal corporation Dummy Voting Machine",
+        candidateInfo: "A. - Dr. Vaibhav Ankush Mahale B. - Pratibha Balasaheb Pawar C. - Seema Makarand Wagh D. - Sharad (Bhau) Haribhau Fadol Vote them in by a huge margin by clicking the button in front of their name and symbol!",
+        polling: "Polling Date - Thursday, 2026-01-15 From 7 AM to 6 PM",
+        division: "Division - २८",
+        th: ["SrNo", "Candidate Name", "Photo", "Symbol", "Button"]
+    },
+    hi: {
+        header: "महानगर पालिका डमी वोटिंग मशीन",
+        instruction: "डेमो मतदान के लिए उम्मीदवार के नाम और चिन्ह के सामने नीले बटन को दबाएं",
+        bodyTitle: "महानगर पालिका डमी वोटिंग मशीन",
+        candidateInfo: "अ. - डा. वैभव अंकुश महाले ब. - प्रतिभा बाळासाहेब पवार क. - सिमा मकरंद वाघ ड. - शरद ( भाऊ) हरिभाऊ फडोल उनके नाम और चिन्ह के सामने बटन दबाकर उन्हें भारी मतों से जिताएं!",
+        polling: "मतदान तिथि - गुरुवार, 2026-01-15 सुबह ७ बजे से शाम ६ बजे तक",
+        division: "प्रभाग क्र: - २८",
+        th: ["अ. क्र.", "उम्मीदवार का नाम", "छवि", "चिन्ह", "बटन"]
+    },
+    mr: {
+        header: "महानगर पालिका डमी मतदान मशीन",
+        instruction: "डेमो मतदानासाठी उमेदवाराच्या नाव आणि चिन्हासमोरील निळ्या बटणावर क्लिक करा",
+        bodyTitle: "महानगर पालिका डमी मतदान मशीन",
+        candidateInfo: "अ. - डा. वैभव अंकुश महाले ब. - प्रतिभा बाळासाहेब पवार क. - सिमा मकरंद वाघ ड. - शरद ( भाऊ) हरिभाऊ फडोल त्यांचे नाव आणि चिन्हासमोरील बटणावर क्लिक करून त्यांना प्रचंड मतांनी विजयी करा!",
+        polling: "मतदान दिनांक - गुरुवार, 2026-01-15 रोजी सकाळी ७ ते सायंकाळी ६ वाजेपर्यत",
+        division: "प्रभाग क्र: - २८",
+        th: ["क्रमांक", "उमेदवाराचे नाव", "छायाचित्र", "चिन्ह", "बटण"]
+    }
+};
+
+function changeLang() {
+    const l = language.value;
+    headerTitle.innerHTML = langData[l].header;
+    instruction.innerHTML = langData[l].instruction;
+    bodyTitle.innerHTML = langData[l].bodyTitle;
+    candidateInfo.innerHTML = langData[l].candidateInfo;
+    pollingInfo.innerHTML = langData[l].polling;
+    divisionText.innerHTML = langData[l].division;
+
+    [th1, th2, th3, th4, th5].forEach((th, i) => th.innerHTML = langData[l].th[i]);
+}
+
+changeLang();
+renderTable();
+</script>
+
+</body>
+</html>
