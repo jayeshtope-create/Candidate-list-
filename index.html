@@ -136,20 +136,32 @@ th {
     font-weight: 600;
 }
 
-.candidate-photo{
-    width: 38px;
-    height: 38px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    background: #fff;
+
+
+
+
+
+
+
+/* Center the symbol in its column */
+td.symbol-cell, th.symbol-cell{
+    text-align: center;
+    vertical-align: middle;
 }
 
 
+.candidate-photo,
 .symbol-img{
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+
+/* Make all text bold */
+body, table, th, td, span, div {
+    font-weight: 700 !important;
 }
 
 </style>
@@ -206,7 +218,7 @@ th {
 const lotusImg = `<img class="symbol-img" src="lotus.png" alt="Symbol">`;
 
 const candidates = [
-    "डा. वैभव अंकुश महाले",
+    "डॉ. वैभव अंकुश महाले",
     "प्रतिभा बाळासाहेब पवार",
     "सिमा मकरंद वाघ",
     "शरद ( भाऊ) हरिभाऊ फडोल"
@@ -216,7 +228,7 @@ const candidates = [
 const candidatePhotos = {
     // Put your candidate photo files next to this HTML OR update paths below.
     // Example: "photos/vaibhav.jpg" (create a 'photos' folder and add images there)
-    "डा. वैभव अंकुश महाले": "candidate_1.jpg",
+    "डॉ. वैभव अंकुश महाले": "candidate_1.jpg",
     "प्रतिभा बाळासाहेब पवार": "candidate_2.jpg",
     "सिमा मकरंद वाघ": "candidate_3.jpg",
     "शरद ( भाऊ) हरिभाऊ फडोल": "candidate_4.jpg"
@@ -294,7 +306,7 @@ const langData = {
         header: "महानगर पालिका डमी वोटिंग मशीन",
         instruction: "डेमो मतदान के लिए उम्मीदवार के नाम और चिन्ह के सामने नीले बटन को दबाएं",
         bodyTitle: "महानगर पालिका डमी वोटिंग मशीन",
-        candidateInfo: "अ. - डा. वैभव अंकुश महाले ब. - प्रतिभा बाळासाहेब पवार क. - सिमा मकरंद वाघ ड. - शरद ( भाऊ) हरिभाऊ फडोल उनके नाम और चिन्ह के सामने बटन दबाकर उन्हें भारी मतों से जिताएं!",
+        candidateInfo: "अ. - डॉ. वैभव अंकुश महाले ब. - प्रतिभा बाळासाहेब पवार क. - सिमा मकरंद वाघ ड. - शरद ( भाऊ) हरिभाऊ फडोल उनके नाम और चिन्ह के सामने बटन दबाकर उन्हें भारी मतों से जिताएं!",
         polling: "मतदान तिथि - गुरुवार, 2026-01-15 सुबह ७ बजे से शाम ६ बजे तक",
         division: "प्रभाग क्र: - २८",
         th: ["अ. क्र.", "उम्मीदवार का नाम", "छवि", "चिन्ह", "बटन"]
@@ -303,7 +315,7 @@ const langData = {
         header: "महानगर पालिका डमी मतदान मशीन",
         instruction: "डेमो मतदानासाठी उमेदवाराच्या नाव आणि चिन्हासमोरील निळ्या बटणावर क्लिक करा",
         bodyTitle: "महानगर पालिका डमी मतदान मशीन",
-        candidateInfo: "अ. - डा. वैभव अंकुश महाले ब. - प्रतिभा बाळासाहेब पवार क. - सिमा मकरंद वाघ ड. - शरद ( भाऊ) हरिभाऊ फडोल त्यांचे नाव आणि चिन्हासमोरील बटणावर क्लिक करून त्यांना प्रचंड मतांनी विजयी करा!",
+        candidateInfo: "अ. - डॉ. वैभव अंकुश महाले ब. - प्रतिभा बाळासाहेब पवार क. - सिमा मकरंद वाघ ड. - शरद ( भाऊ) हरिभाऊ फडोल त्यांचे नाव आणि चिन्हासमोरील बटणावर क्लिक करून त्यांना प्रचंड मतांनी विजयी करा!",
         polling: "मतदान दिनांक - गुरुवार, 2026-01-15 रोजी सकाळी ७ ते सायंकाळी ६ वाजेपर्यत",
         division: "प्रभाग क्र: - २८",
         th: ["क्रमांक", "उमेदवाराचे नाव", "छायाचित्र", "चिन्ह", "बटण"]
